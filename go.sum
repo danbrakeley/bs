@@ -1,0 +1,4 @@
+github.com/danbrakeley/commandline v1.0.0 h1:9qOX7wnJxECT0ZEZav6P5/GVdX/xSsPnIwQ9ptpMUuc=
+github.com/danbrakeley/commandline v1.0.0/go.mod h1:TebcfPCZN3Dpc0DZMp68KTbVzCr07KCfAVkrYlLi2is=
+github.com/magefile/mage v1.11.0 h1:C/55Ywp9BpgVVclD3lRnSYCwXTYxmSppIgLeDYlNuls=
+github.com/magefile/mage v1.11.0/go.mod h1:z5UZb/iS3GoOSn0JgWuiw7dxlurVYTu+/jHXqQg881A=
