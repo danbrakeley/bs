@@ -19,9 +19,17 @@ Features include:
   - This mimics bash's `set -e`, where any error results in a panic
   - Panic behavior is overridable, in case you need to do some cleanup or whatever
 
-## Example magefile.go
+## Example
 
-Here's a real world example of how I've used `bs` in a project:
+I've got an example magefile below, but first, here's what the output looks like:
+
+![example terminal output](images/example.png)
+
+And then here's that same output, but with mage's "verbose" flag set:
+
+![example terminal output with verbose output](images/example-verbose.png)
+
+And here's the corresponding `magefile.go`:
 
 ```go
 // +build mage
@@ -39,16 +47,16 @@ import (
 
 // BUILD COMMANDS
 
-// Builds myappd into the "local" folder.
+// Builds ardentd into the "local" folder.
 func Build() {
-  target := bs.ExeName("myappd")
+  target := bs.ExeName("ardentd")
 
   bs.Echo("Running tests...")
   bs.Cmd("go test ./...").Run()
 
   bs.Echof("Building %s...", target)
   bs.MkdirAll("local/")
-  bs.Cmdf("go build -o local/%s ./cmd/myappd", target).Run()
+  bs.Cmdf("go build -o local/%s ./cmd/ardentd", target).Run()
 }
 
 // Removes all artifacts from previous builds.
@@ -58,22 +66,22 @@ func Clean() {
   bs.RemoveAll("local")
 }
 
-// Runs myappd.
+// Runs ardentd.
 func Run() {
   mg.Deps(Build)
 
-  target := bs.ExeName("myappd")
-  pgpass := pgGetPass()
-  bs.PushEchoFilter(pgpass)
+  target := bs.ExeName("ardentd")
+  password := pgGetPass()
+  bs.PushEchoFilter(password)
   defer bs.PopEchoFilter()
-  pgURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", PG_USERNAME, pgpass, PG_PORT, PG_DBNAME)
+  pgURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", PG_USERNAME, password, PG_PORT, PG_DBNAME)
 
   bs.Chdir("local")
   bs.Echo("Running...")
   bs.Cmdf("%s", target).Env(
-    "MYAPP_HOST=127.0.0.1:8080",
-    "MYAPP_PGURL="+pgURL,
-    "MYAPP_VERBOSE=true",
+    "ARDENT_HOST=127.0.0.1:8080",
+    "ARDENT_PGURL="+pgURL,
+    "ARDENT_VERBOSE=true",
   ).Run()
 }
 
@@ -104,11 +112,11 @@ func PG(cmd string) {
 
 const (
   PG_DOCKER_IMAGE   = "postgres:13-alpine"
-  PG_CONTAINER_NAME = "psql-myapp"
-  PG_DBNAME         = "myapp"
-  PG_USERNAME       = "primary"
-  PG_PASS_FILE      = "password.local"
-  PG_PORT           = "5433"
+  PG_CONTAINER_NAME = "psql-ardent"
+  PG_DBNAME         = "ardent"
+  PG_USERNAME       = "super"
+  PG_PASS_FILE      = "pg.pass.local"
+  PG_PORT           = "5444"
 )
 
 func pgStart() {
@@ -161,17 +169,32 @@ func pgPsql() {
   ).Run()
 }
 
+// GOOSE COMMANDS
+
+// Calls "goose {cmd}", where {cmd} is one of: status, up, up-by-one, down, redo, reset, or version
+func Goose(cmd string) {
+  password := pgGetPass()
+  bs.PushEchoFilter(password)
+  defer bs.PopEchoFilter()
+  bs.Cmdf("goose -dir sql %s", cmd).Env("GOOSE_DRIVER=postgres", "GOOSE_DBSTRING="+pgDSN(password)).Run()
+}
+
+// helpers
+
 var regexpPassword = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 
 func pgGetPass() string {
-  return readAndValidatePassword(PG_PASS_FILE, regexpPassword)
-
   str := strings.TrimSpace(strings.Split(bs.Read(PG_PASS_FILE), "\n")[0])
   if !regexpPassword.MatchString(str) {
-    panic(fmt.Errorf(
-      `Password found in "%s" is not allowed. Please edit password to match regexp: %s`,
-      PG_PASS_FILE, regexpPassword.String()))
+    panic(fmt.Errorf(`Password is only allowed alphanumerics and underscores. Please change "%s" by hand to fix.`, PG_PASS_FILE))
   }
   return str
+}
+
+func pgDSN(password string) string {
+  return fmt.Sprintf(
+    "host=localhost port=%s user=%s password=%s dbname=%s sslmode=disable",
+    PG_PORT, PG_USERNAME, password, PG_DBNAME,
+  )
 }
 ```
