@@ -9,6 +9,7 @@ Features include:
 - Echo/Warn/Verbose for outputting lines
   - Verbose only prints if Mage's `mg.Verbose()` is true
 - ANSI color support (which respects [NO_COLORS](https://no-color.org) env var)
+- Protect secrets from being visible on-screen or in logs via PushEchoFilter/PopEchoFilter
 - Read files to strings (or []byte)
 - Write or Append strings (or []byte) to files
 - Run commands via bash-like parsing of arguments, with support for redirecting stdin/out/err
@@ -16,7 +17,7 @@ Features include:
 - Common File/Folder helpers, like Exists, IsFile, IsDir, Getwd, Chdir, Mkdir, MkdirAll, Remove, RemoveAll, etc
 - Global error handler that allows most `bs` commands to not require exlicit error handling
   - This mimics bash's `set -e`, where any error results in a panic
-  - Panic behavior is overridable, in case you need to do some cleanup or whatever.
+  - Panic behavior is overridable, in case you need to do some cleanup or whatever
 
 ## Example magefile.go
 
