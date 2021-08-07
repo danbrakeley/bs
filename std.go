@@ -22,7 +22,7 @@ var (
 
 func init() {
 	// TODO: check for terminal, or is this enough?
-	colorsEnabled = len(os.Getenv("NO_COLORS")) == 0
+	colorsEnabled = len(os.Getenv("NO_COLOR")) == 0
 }
 
 // SetStdin overrides stdin for Run*/Bash*/Read* (defaults to os.Stdin)

@@ -8,7 +8,7 @@ Features include:
 
 - Echo/Warn/Verbose for outputting lines
   - Verbose only prints if Mage's `mg.Verbose()` is true
-- ANSI color support (which respects [NO_COLORS](https://no-color.org) env var)
+- ANSI color support (which respects [NO_COLOR](https://no-color.org) env var)
 - Protect secrets from being visible on-screen or in logs via PushEchoFilter/PopEchoFilter
 - Read files to strings (or []byte)
 - Write or Append strings (or []byte) to files
