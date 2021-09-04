@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
+)
 
-	"github.com/magefile/mage/mg"
+const (
+	initialVerboseEnvVar = "MAGEFILE_VERBOSE"
 )
 
 var (
@@ -18,6 +21,10 @@ var (
 	echoFilters []string = []string{}
 
 	colorsEnabled bool
+
+	// defaults to Mage's verbose flag, since this package was original written to be used in Magefiles.
+	// However, if you want to use your own VERBOSE flag here, just call SetVerboseEnvVarName.
+	verboseEnvVar string = initialVerboseEnvVar
 )
 
 func init() {
@@ -58,15 +65,33 @@ func Echof(format string, args ...interface{}) {
 	echo(fmt.Sprintf(format, args...), ensureNewline, colorEcho)
 }
 
+// SetVerboseEnvVarName allows changing the name of the environment variable that is used to
+// decide if we are in Verbose mode. This function creates the new env var immediately,
+// setting its value to true or false based on the value of the old env var name.
+func SetVerboseEnvVarName(s string) {
+	wasVerbose := IsVerbose()
+	verboseEnvVar = s
+	SetVerbose(wasVerbose)
+}
+
+func SetVerbose(b bool) {
+	os.Setenv(verboseEnvVar, strconv.FormatBool(b))
+}
+
+func IsVerbose() bool {
+	b, _ := strconv.ParseBool(os.Getenv(verboseEnvVar))
+	return b
+}
+
 func Verbose(str string) {
-	if !mg.Verbose() {
+	if !IsVerbose() {
 		return
 	}
 	echo(str, ensureNewline, colorVerbose)
 }
 
 func Verbosef(format string, args ...interface{}) {
-	if !mg.Verbose() {
+	if !IsVerbose() {
 		return
 	}
 	echo(fmt.Sprintf(format, args...), ensureNewline, colorVerbose)

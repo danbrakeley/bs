@@ -2,12 +2,14 @@
 
 ## Overview
 
-`bs` is a helper package for [Magefiles](https://magefile.org) that allows for a slightly more bash-like experience than out-of-the-box Mage and its spartan `sh` package.
+`bs` is a package to streamline building bash-like scripts.
+
+The original intended use was inside a [Magefile](https://magefile.org), but there's nothing stopping you from using this in a regular Go app.
 
 Features include:
 
 - Echo/Warn/Verbose for outputting lines
-  - Verbose only prints if Mage's `mg.Verbose()` is true
+  - Verbose defaults to only printing if MAGEFILE_VERBOSE is set to true (mirroring how Mage's `mg.Verbose()` works), but the specific env var that is checked can be changed by calling `SetVerboseEnvVarName`.
 - ANSI color support (which respects [NO_COLOR](https://no-color.org) env var)
 - Protect secrets from being visible on-screen or in logs via PushEchoFilter/PopEchoFilter
 - Read files to strings (or []byte)
@@ -17,7 +19,7 @@ Features include:
 - Common File/Folder helpers, like Exists, IsFile, IsDir, Getwd, Chdir, Mkdir, MkdirAll, Remove, RemoveAll, etc
 - Global error handler that allows most `bs` commands to not require exlicit error handling
   - This mimics bash's `set -e`, where any error results in a panic
-  - Panic behavior is overridable, in case you need to do some cleanup or whatever
+  - The default "panic" behavior is overridable via a call to `SetErrorHandler`.
 
 ## Example
 
