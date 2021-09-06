@@ -20,16 +20,15 @@ var (
 
 	echoFilters []string = []string{}
 
-	colorsEnabled bool
+	colorsEnabled = len(os.Getenv("NO_COLOR")) == 0
 
 	// defaults to Mage's verbose flag, since this package was original written to be used in Magefiles.
 	// However, if you want to use your own VERBOSE flag here, just call SetVerboseEnvVarName.
 	verboseEnvVar string = initialVerboseEnvVar
 )
 
-func init() {
-	// TODO: check for terminal, or is this enough?
-	colorsEnabled = len(os.Getenv("NO_COLOR")) == 0
+func SetColorsEnabled(enabled bool) {
+	colorsEnabled = enabled
 }
 
 // SetStdin overrides stdin for Run*/Bash*/Read* (defaults to os.Stdin)
