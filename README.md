@@ -1,5 +1,21 @@
 # bs
 
+---
+---
+---
+
+## BS IS DEPRECATED
+
+This project has been renamed to `bsh` and moved to [danbrakeley/bsh](https://github.com/danbrakeley/bsh). This depot will get no further updates.
+
+`bsh` removes all global state, and replaces it with the `Bsh` struct, which allows for mulitple concurrent Bsh instances, where each one can override error handling or Stdin/out/err routing as needed.
+
+Otherwise, the API and functionality of `bsh` is pretty much identical to `bs`.
+
+---
+---
+---
+
 ## Overview
 
 `bs` is a package to streamline building bash-like scripts.
